@@ -60,3 +60,39 @@ class Referral(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     outcome = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class Transport(models.Model):
+    TRANSPORT_TYPE_CHOICES = (
+        ('ambulance', 'Ambulance'),
+        ('motorbike', 'Motorbike'),
+        ('car', 'Car'),
+        ('other', 'Other'),
+    )
+
+    STATUS_CHOICES = (
+        ('available', 'Available'),
+        ('busy', 'Busy'),
+        ('maintenance', 'Maintenance'),
+    )
+
+    facility = models.ForeignKey(
+        HealthFacility,
+        related_name='transports',
+        on_delete=models.CASCADE
+    )
+    transport_type = models.CharField(
+        max_length=20,
+        choices=TRANSPORT_TYPE_CHOICES
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='available'
+    )
+    capacity = models.IntegerField(
+        help_text="Number of patients that can be transported"
+    )
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.transport_type} - {self.facility.name}"
