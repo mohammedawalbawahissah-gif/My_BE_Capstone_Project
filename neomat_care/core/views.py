@@ -13,6 +13,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from core.models import Referral, EmergencyCase, HealthFacility, Transport
 from core.serializers import ReferralSerializer
+from django.db import models
+from django.conf import settings
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -177,3 +179,23 @@ class CompleteReferralView(APIView):
             referral.transport.save()
 
         return Response(ReferralSerializer(referral).data)
+
+class AuditLog(models.Model):
+    ACTION_CHOICES = [
+        ("CREATE_CASE", "Created Emergency Case"),
+        ("SUGGEST_REFERRAL", "Suggested Referral"),
+        ("CREATE_REFERRAL", "Created Referral"),
+        ("ACCEPT_REFERRAL", "Accepted Referral"),
+        ("DISPATCH_REFERRAL", "Dispatched Transport"),
+        ("COMPLETE_REFERRAL", "Completed Referral"),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    action = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    referral = models.ForeignKey('Referral', null=True, blank=True, on_delete=models.SET_NULL)
+    emergency_case = models.ForeignKey('EmergencyCase', null=True, blank=True, on_delete=models.SET_NULL)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    metadata = models.JSONField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.action} - {self.timestamp}"

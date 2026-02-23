@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 from .views import RegisterUserAPIView
 from .views import SuggestReferralView, CreateReferralView, AcceptReferralView, DispatchReferralView, CompleteReferralView
-
+from .auth_views import login_view
 
 urlpatterns = [
     path('register/', RegisterUserAPIView.as_view(), name='register'),
@@ -12,4 +12,5 @@ urlpatterns = [
     path("referrals/<int:referral_id>/accept/", AcceptReferralView.as_view(), name="accept-referral"),
     path("referrals/<int:referral_id>/dispatch/", DispatchReferralView.as_view(), name="dispatch-referral"),
     path("referrals/<int:referral_id>/complete/", CompleteReferralView.as_view(), name="complete-referral"),
+    path("auth/login/", login_view),
 ]

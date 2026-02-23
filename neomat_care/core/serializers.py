@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, HealthFacility, EmergencyCase, Referral
+from .models import User, HealthFacility, EmergencyCase, Referral, Transport
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,6 +18,10 @@ class EmergencyCaseSerializer(serializers.ModelSerializer):
         model = EmergencyCase
         fields = '__all__'
 
+class TransportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transport
+        fields = '__all__'
 
 class ReferralSerializer(serializers.ModelSerializer):
     class Meta:
