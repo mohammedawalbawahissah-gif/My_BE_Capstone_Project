@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Health Facilities{% endblock %}
+
+{% block content %}
+<h2>Health Facilities</h2>
+<p>List of health facilities for patient referrals and coordination.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Facility ID</th>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Contact</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for facility in facilities %}
+        <tr>
+            <td>{{ facility.id }}</td>
+            <td>{{ facility.name }}</td>
+            <td>{{ facility.location }}</td>
+            <td>{{ facility.contact }}</td>
+            <td>
+                <a href="{% url 'facility_detail' facility.id %}">View</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No facilities registered yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

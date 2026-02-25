@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Logout{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2>Logout</h2>
+
+    <p>Are you sure you want to log out?</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Yes, Logout</button>
+        <a href="{% url 'home' %}" class="btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
