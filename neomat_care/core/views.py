@@ -5,7 +5,9 @@ from rest_framework import status, generics
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view
 from django.contrib.auth import get_user_model
-
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from core.models import Referral, EmergencyCase, HealthFacility, Transport
 from core.serializers import (
     RegisterUserSerializer,
@@ -17,27 +19,85 @@ from core.services.referral_engine import generate_referral
 
 User = get_user_model()
 
-# -------------------- Placeholder Views --------------------
-def emergency(request):
-    return HttpResponse("Emergency view placeholder")
+# HOME / DASHBOARD
+@login_required
+def home_view(request):
+    return render(request, "home.html")
+
+
+@login_required
+def dashboard_view(request):
+    return render(request, "home.html")
+
+
+@login_required
+def patients_view(request):
+    return render(request, "patients.html")
+
+
+@login_required
+def referrals_view(request):
+    return render(request, "referrals.html")
+
+
+@login_required
+def emergency_view(request):
+    return render(request, "emergency.html")
+
+
+@login_required
+def facilities_view(request):
+    return render(request, "facilities.html")
+
+
+@login_required
+def transport_view(request):
+    return render(request, "transport.html")
+
+
+@login_required
+def profile_view(request):
+    return render(request, "profile.html")
+
 
 def login_view(request):
-    return HttpResponse("Login view placeholder")
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect("home")
+
+        return render(request, "login.html", {"error": "Invalid username or password"})
+
+    return render(request, "login.html")
+
+
+from django.contrib.auth.models import User
+
+def register_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+
+        if User.objects.filter(username=username).exists():
+            return render(request, "register.html", {"error": "Username already exists"})
+
+        User.objects.create_user(username=username, email=email, password=password)
+        return redirect("login")
+
+    return render(request, "register.html")
 
 def logout_view(request):
-    return HttpResponse("Logout view placeholder")
-
-def register(request):
-    return HttpResponse("Register view placeholder")
-
-def patient_list(request):
-    return HttpResponse("Patient list placeholder")
-
-def dashboard(request):
-    return HttpResponse("Dashboard view placeholder")
-
-def profile(request):
-    return HttpResponse("Profile view placeholder")
+    if request.method == "POST":
+        logout(request)
+        return redirect("login")
+    return render(request, "logout.html")
+        
 
 # -------------------- API Views --------------------
 class RegisterUserAPIView(generics.CreateAPIView):
