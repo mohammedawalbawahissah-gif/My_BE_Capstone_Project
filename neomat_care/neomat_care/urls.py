@@ -16,11 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core.views import home
+from core.views import home, login_view, logout_view, dashboard, profile, patient_list, register
+from core import views
+
 
 urlpatterns = [
-    path('', home),
     path('admin/', admin.site.urls),
-    path('api/auth/', include('core.urls')),  # <-- core app handles auth
-    path("api/", include("core.urls")),
+
+    path('home/', home, name='home'),
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('dashboard/', dashboard, name='dashboard'),
+    path('profile/', profile, name='profile'),
+    path('patients/', patient_list, name='patients'),
+    path('register/', register, name='register'),
+
+    path('api/', include('core.urls')),
 ]

@@ -1,47 +1,56 @@
-from django.http import JsonResponse
-from django.shortcuts import render
-from rest_framework.decorators import api_view
-from rest_framework import generics
-from django.contrib.auth import get_user_model
-User = get_user_model()
-from rest_framework import serializers
-from rest_framework.permissions import AllowAny
+from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from core.services.referral_engine import generate_referral
-from core.serializers import HealthFacilitySerializer, TransportSerializer, ReferralSerializer
+from rest_framework import status, generics
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view
+from django.contrib.auth import get_user_model
+
 from core.models import Referral, EmergencyCase, HealthFacility, Transport
-from django.db import models
-from django.conf import settings
+from core.serializers import (
+    RegisterUserSerializer,
+    HealthFacilitySerializer,
+    TransportSerializer,
+    ReferralSerializer
+)
+from core.services.referral_engine import generate_referral
 
+User = get_user_model()
 
-class RegisterUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
+# -------------------- Placeholder Views --------------------
+def emergency(request):
+    return HttpResponse("Emergency view placeholder")
 
-    def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
+def login_view(request):
+    return HttpResponse("Login view placeholder")
 
+def logout_view(request):
+    return HttpResponse("Logout view placeholder")
+
+def register(request):
+    return HttpResponse("Register view placeholder")
+
+def patient_list(request):
+    return HttpResponse("Patient list placeholder")
+
+def dashboard(request):
+    return HttpResponse("Dashboard view placeholder")
+
+def profile(request):
+    return HttpResponse("Profile view placeholder")
+
+# -------------------- API Views --------------------
 class RegisterUserAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterUserSerializer
     permission_classes = [AllowAny] 
 
 class SuggestReferralView(APIView):
-    """
-    Suggests the best facility and transport for a given emergency case.
-    """
-
     def post(self, request):
         case_id = request.data.get("emergency_case_id")
         latitude = request.data.get("current_latitude")
         longitude = request.data.get("current_longitude")
 
-        # Basic validation
         if not all([case_id, latitude, longitude]):
             return Response({"error": "emergency_case_id, current_latitude, current_longitude are required"},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -49,16 +58,13 @@ class SuggestReferralView(APIView):
         try:
             case = EmergencyCase.objects.get(id=case_id)
         except EmergencyCase.DoesNotExist:
-            return Response({"error": "Emergency case not found"},
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Emergency case not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Call the referral engine
         result = generate_referral(case, latitude, longitude)
 
         if not result["facility"]:
             return Response({"error": "No suitable facility found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Serialize the results
         facility_data = HealthFacilitySerializer(result["facility"]).data
         transport_data = TransportSerializer(result["transport"][0]).data if result["transport"] else None
 
@@ -69,7 +75,6 @@ class SuggestReferralView(APIView):
         }, status=status.HTTP_200_OK)
 
 class CreateReferralView(APIView):
-    
     def post(self, request):
         emergency_case_id = request.data.get("emergency_case_id")
         receiving_facility_id = request.data.get("receiving_facility_id")
@@ -99,10 +104,6 @@ class CreateReferralView(APIView):
         return Response(ReferralSerializer(referral).data, status=status.HTTP_201_CREATED)
 
 class AcceptReferralView(APIView):
-    """
-    Facility accepts a pending referral.
-    """
-
     def patch(self, request, referral_id):
         try:
             referral = Referral.objects.get(id=referral_id)
@@ -114,14 +115,9 @@ class AcceptReferralView(APIView):
 
         referral.status = "ACCEPTED"
         referral.save()
-
         return Response(ReferralSerializer(referral).data)
 
 class DispatchReferralView(APIView):
-    """
-    Assign transport and mark referral as IN_TRANSIT.
-    """
-
     def patch(self, request, referral_id):
         transport_id = request.data.get("transport_id")
 
@@ -137,7 +133,6 @@ class DispatchReferralView(APIView):
         if transport.status != "available":
             return Response({"error": "Transport is not available"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Assign transport
         referral.transport = transport
         referral.status = "IN_TRANSIT"
         referral.save()
@@ -149,12 +144,8 @@ class DispatchReferralView(APIView):
         return Response({"message": "Referral dispatched successfully"})
 
 class CompleteReferralView(APIView):
-    """
-    Mark referral as completed with outcome.
-    """
-
     def patch(self, request, referral_id):
-        outcome = request.data.get("outcome")  # maternal_alive, maternal_deceased, etc.
+        outcome = request.data.get("outcome")
 
         try:
             referral = Referral.objects.get(id=referral_id)
@@ -168,7 +159,6 @@ class CompleteReferralView(APIView):
         referral.outcome = outcome
         referral.save()
 
-        # Free up transport
         if referral.transport:
             referral.transport.status = "available"
             referral.transport.assigned_referral = None
@@ -176,29 +166,7 @@ class CompleteReferralView(APIView):
 
         return Response(ReferralSerializer(referral).data)
 
-class AuditLog(models.Model):
-    ACTION_CHOICES = [
-        ("CREATE_CASE", "Created Emergency Case"),
-        ("SUGGEST_REFERRAL", "Suggested Referral"),
-        ("CREATE_REFERRAL", "Created Referral"),
-        ("ACCEPT_REFERRAL", "Accepted Referral"),
-        ("DISPATCH_REFERRAL", "Dispatched Transport"),
-        ("COMPLETE_REFERRAL", "Completed Referral"),
-    ]
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    action = models.CharField(max_length=50, choices=ACTION_CHOICES)
-    referral = models.ForeignKey('Referral', null=True, blank=True, on_delete=models.SET_NULL)
-    emergency_case = models.ForeignKey('EmergencyCase', null=True, blank=True, on_delete=models.SET_NULL)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    metadata = models.JSONField(blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.user.email} - {self.action} - {self.timestamp}"
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
+# -------------------- API Root --------------------
 @api_view(['GET'])
 def api_root(request):
     return Response({
@@ -212,6 +180,4 @@ def api_root(request):
     })
 
 def home(request):
-    return JsonResponse({
-        "message": "Welcome to Neomat Care API"
-    })
+    return JsonResponse({"message": "Welcome to Neomat Care API"})
