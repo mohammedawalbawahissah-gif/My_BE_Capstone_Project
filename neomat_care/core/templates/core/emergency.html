@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency{% endblock %}
+
+{% block content %}
+<h2>Emergency Alerts</h2>
+<p>Monitor and respond to emergency cases immediately.</p>
+<ul>
+    {% for alert in emergencies %}
+    <li>{{ alert.patient.name }} — {{ alert.description }} — {{ alert.timestamp }}</li>
+    {% empty %}
+    <li>No emergencies at the moment.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
