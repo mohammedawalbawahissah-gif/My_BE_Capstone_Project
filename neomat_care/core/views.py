@@ -17,7 +17,6 @@ from core.serializers import (
 )
 from core.services.referral_engine import generate_referral
 
-User = get_user_model()
 
 # HOME / DASHBOARD
 @login_required
@@ -75,9 +74,6 @@ def login_view(request):
 
     return render(request, "login.html")
 
-
-from django.contrib.auth.models import User
-
 def register_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -97,7 +93,8 @@ def logout_view(request):
         logout(request)
         return redirect("login")
     return render(request, "logout.html")
-        
+
+User = get_user_model()
 
 # -------------------- API Views --------------------
 class RegisterUserAPIView(generics.CreateAPIView):

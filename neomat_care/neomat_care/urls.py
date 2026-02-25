@@ -16,20 +16,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from core.views import home, login_view, logout_view, dashboard, profile, patient_list, register
 from core import views
 
-
 urlpatterns = [
+    # ADMIN
     path('admin/', admin.site.urls),
 
-    path('home/', home, name='home'),
-    path('login/', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
-    path('dashboard/', dashboard, name='dashboard'),
-    path('profile/', profile, name='profile'),
-    path('patients/', patient_list, name='patients'),
-    path('register/', register, name='register'),
+    # ---------- WEBSITE PAGES ----------
+    path('', views.home, name='home'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('register/', views.register_view, name='register'),
 
-    path('api/', include('core.urls')),
+    path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('profile/', views.profile_view, name='profile'),
+    path('patients/', views.patients_view, name='patients'),
+    path('referrals/', views.referrals_view, name='referrals'),
+    path('emergency/', views.emergency_view, name='emergency'),
+    path('facilities/', views.facilities_view, name='facilities'),
+    path('transport/', views.transport_view, name='transport'),
+
+    # ---------- API ----------
+    path('api/', include('core.api_urls')),
 ]
