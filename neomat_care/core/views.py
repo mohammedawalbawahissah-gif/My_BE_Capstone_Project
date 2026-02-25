@@ -1,3 +1,6 @@
+from django.http import JsonResponse
+from django.shortcuts import render
+from rest_framework.decorators import api_view
 from rest_framework import generics
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -7,12 +10,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from core.services.referral_engine import generate_referral
-from core.serializers import HealthFacilitySerializer, TransportSerializer
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from core.serializers import HealthFacilitySerializer, TransportSerializer, ReferralSerializer
 from core.models import Referral, EmergencyCase, HealthFacility, Transport
-from core.serializers import ReferralSerializer
 from django.db import models
 from django.conf import settings
 
@@ -70,10 +69,7 @@ class SuggestReferralView(APIView):
         }, status=status.HTTP_200_OK)
 
 class CreateReferralView(APIView):
-    """
-    Create a referral for an emergency case to a receiving facility.
-    """
-
+    
     def post(self, request):
         emergency_case_id = request.data.get("emergency_case_id")
         receiving_facility_id = request.data.get("receiving_facility_id")
@@ -199,3 +195,23 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.action} - {self.timestamp}"
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(['GET'])
+def api_root(request):
+    return Response({
+        "message": "Neomat Care API",
+        "endpoints": {
+            "register": "/api/register/",
+            "login": "/api/login/",
+            "create_referral": "/api/referrals/create/",
+            "suggest_referral": "/api/referrals/suggest/"
+        }
+    })
+
+def home(request):
+    return JsonResponse({
+        "message": "Welcome to Neomat Care API"
+    })
