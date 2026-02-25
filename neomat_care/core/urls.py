@@ -19,3 +19,11 @@ urlpatterns = [
     path('referrals/<int:referral_id>/dispatch/', DispatchReferralView.as_view()),
     path('referrals/<int:referral_id>/complete/', CompleteReferralView.as_view()),
 ]
+
+urlpatterns = [
+    path("register/", views.register_user, name="register_user"),
+    path("login/", views.login_user, name="login_user"),
+    path("emergency/create/", views.create_emergency, name="create_emergency"),
+    path("referral/create/", views.create_referral, name="create_referral"),
+    path("transport/dispatch/", views.dispatch_transport, name="dispatch_transport"),
+]

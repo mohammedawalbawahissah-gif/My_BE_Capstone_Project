@@ -39,3 +39,7 @@ urlpatterns = [
     # ---------- API ----------
     path('api/', include('core.api_urls')),
 ]
+
+urlpatterns = [
+    path("", include("core.urls")),  # all core app urls
+]

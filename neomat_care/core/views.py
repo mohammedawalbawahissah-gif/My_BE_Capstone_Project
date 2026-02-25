@@ -17,8 +17,11 @@ from core.serializers import (
 )
 from core.services.referral_engine import generate_referral
 
-
 # HOME / DASHBOARD
+def home(request):
+    return render(request, "home.html")
+
+
 @login_required
 def home_view(request):
     return render(request, "home.html")
@@ -236,5 +239,93 @@ def api_root(request):
         }
     })
 
-def home(request):
-    return JsonResponse({"message": "Welcome to Neomat Care API"})
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def register_user(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        username = data.get("username")
+        email = data.get("email")
+        password = data.get("password")
+
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"error": "User already exists"}, status=400)
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+
+        return JsonResponse({"message": "User registered successfully"})
+
+@csrf_exempt
+def login_user(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        username = data.get("username")
+        password = data.get("password")
+
+        user = authenticate(username=username, password=password)
+        if user:
+            login(request, user)
+            return JsonResponse({"message": "Login successful"})
+        else:
+            return JsonResponse({"error": "Invalid credentials"}, status=401)
+
+from .models import EmergencyCase  # make sure this model exists
+
+@csrf_exempt
+def create_emergency(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        case = EmergencyCase.objects.create(
+            patient_name=data.get("patient_name"),
+            condition=data.get("condition"),
+            severity=data.get("severity"),
+            created_by=request.user
+        )
+        return JsonResponse({"message": "Emergency recorded", "case_id": case.id})
+
+from .models import Referral
+
+@csrf_exempt
+def create_referral(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        case_id = data.get("case_id")
+        case = EmergencyCase.objects.get(id=case_id)
+
+        referral = Referral.objects.create(
+            emergency_case=case,
+            referred_to=data.get("facility"),
+            reason=data.get("reason"),
+            status="Pending"
+        )
+        return JsonResponse({"message": "Referral created", "referral_id": referral.id})
+
+from .models import Transport
+
+@csrf_exempt
+def dispatch_transport(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        referral_id = data.get("referral_id")
+        referral = Referral.objects.get(id=referral_id)
+
+        transport = Transport.objects.create(
+            referral=referral,
+            driver_name=data.get("driver"),
+            vehicle_number=data.get("vehicle"),
+            status="En Route"
+        )
+
+        referral.status = "Transport Dispatched"
+        referral.save()
+
+        return JsonResponse({"message": "Ambulance dispatched successfully"})
