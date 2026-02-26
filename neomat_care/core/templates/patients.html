@@ -1,36 +1,45 @@
 {% extends "base.html" %}
 
-{% block title %}Patients{% endblock %}
-
 {% block content %}
-<h2>Patients List</h2>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Gender</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Loop through patients here -->
-        {% for patient in patients %}
-        <tr>
-            <td>{{ patient.id }}</td>
-            <td>{{ patient.name }}</td>
-            <td>{{ patient.age }}</td>
-            <td>{{ patient.gender }}</td>
-            <td>
-                <a href="{% url 'patient_detail' patient.id %}">View</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">No patients yet.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<h1>Patients List</h1>
+
+{% if patients %}
+    <table class="patients-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Patient ID</th>
+                <th>Full Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Marital Status</th>
+                <th>Pregnancy Risk</th>
+                <th>Diagnosis</th>
+                <th>Contact</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patients %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ patient.patient_id }}</td>
+                <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                <td>{{ patient.age }}</td>
+                <td>{{ patient.gender }}</td>
+                <td>{{ patient.marital_status }}</td>
+                <td>{{ patient.pregnancy_risk_level|default:"N/A" }}</td>
+                <td>{{ patient.diagnosis|default:"N/A" }}</td>
+                <td>{{ patient.contact|default:"N/A" }}</td>
+                <td>
+                    <a href="{% url 'patient_detail' patient.id %}">View</a> |
+                    <a href="{% url 'patient_edit' patient.id %}">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No patients found.</p>
+{% endif %}
 {% endblock %}

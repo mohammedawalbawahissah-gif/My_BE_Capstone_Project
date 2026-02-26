@@ -81,3 +81,185 @@ footer {
     background: #0f172a;
     color: white;
 }
+
+
+/* =============================
+   GLOBAL RESET
+============================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background-color: #f4f7fb;
+    color: #333;
+}
+
+/* =============================
+   NAVBAR
+============================= */
+nav {
+    background: #0a4fa3;
+    padding: 15px 30px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav h1 {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 500;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* =============================
+   PAGE CONTAINER
+============================= */
+.container {
+    padding: 30px;
+}
+
+/* =============================
+   HEADINGS
+============================= */
+h2 {
+    margin-bottom: 20px;
+    color: #0a4fa3;
+}
+
+/* =============================
+   BUTTONS
+============================= */
+.btn {
+    background: #0a4fa3;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.btn:hover {
+    background: #083b7a;
+}
+
+.btn-danger {
+    background: #d9534f;
+}
+
+.btn-success {
+    background: #28a745;
+}
+
+/* =============================
+   TABLES
+============================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+}
+
+th {
+    background: #0a4fa3;
+    color: white;
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+    background: #f2f6ff;
+}
+
+/* =============================
+   STATUS BADGES
+============================= */
+.status {
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+}
+
+.pending { background: #ffc107; }
+.accepted { background: #007bff; }
+.transit { background: #17a2b8; }
+.completed { background: #28a745; }
+.cancelled { background: #dc3545; }
+
+/* =============================
+   FORMS
+============================= */
+form {
+    background: white;
+    padding: 25px;
+    width: 500px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border-radius: 8px;
+}
+
+label {
+    font-weight: 600;
+    display: block;
+    margin-top: 15px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #0a4fa3;
+}
+
+/* =============================
+   ALERTS
+============================= */
+.alert {
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* EMERGENCY FLASH */
+.emergency-blink {
+    background: #ff4d4d !important;
+    color: white !important;
+}
