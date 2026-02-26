@@ -170,6 +170,17 @@ class Patient(models.Model):
     def __str__(self):
         return self.name
 
+from django import forms
+from .models import Patient
+
+class PatientForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = '__all__'  # include all fields
+        widgets = {
+            'lmp': forms.DateInput(attrs={'type':'date'}),
+            'edd': forms.DateInput(attrs={'type':'date'}),
+        }
 
 class HealthFacility(models.Model):
     name = models.CharField(max_length=150)

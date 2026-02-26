@@ -431,3 +431,48 @@ def dispatch_transport(request):
         referral.save()
 
         return JsonResponse({"message": "Ambulance dispatched successfully"})
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Patient
+from .forms import PatientForm
+
+# List all patients
+def patients(request):
+    patients = Patient.objects.all().order_by('-created_at')
+    return render(request, 'patients.html', {'patients': patients})
+
+# View a single patient's details
+def patient_detail(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    return render(request, 'patient_detail.html', {'patient': patient})
+
+# Add a new patient
+def patient_add(request):
+    if request.method == 'POST':
+        form = PatientForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('patients')
+    else:
+        form = PatientForm()
+    return render(request, 'patient_form.html', {'form': form, 'patient': None})
+
+# Edit an existing patient
+def patient_edit(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    if request.method == 'POST':
+        form = PatientForm(request.POST, instance=patient)
+        if form.is_valid():
+            form.save()
+            return redirect('patient_detail', pk=patient.pk)
+    else:
+        form = PatientForm(instance=patient)
+    return render(request, 'patient_form.html', {'form': form, 'patient': patient})
+
+# Optional: Delete a patient
+def patient_delete(request, pk):
+    patient = get_object_or_404(Patient, pk=pk)
+    if request.method == 'POST':
+        patient.delete()
+        return redirect('patients')
+    return render(request, 'patient_confirm_delete.html', {'patient': patient})
