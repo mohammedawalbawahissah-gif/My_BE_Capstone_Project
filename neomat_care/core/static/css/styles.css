@@ -166,6 +166,30 @@ h2 {
     background: #28a745;
 }
 
+/* Filter bar above table */
+.filter-bar {
+    margin-bottom: 15px;
+}
+
+.filter-bar a {
+    text-decoration: none;
+    color: #333;
+    background-color: #f2f2f2;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.filter-bar a:hover {
+    background-color: #ddd;
+}
+
+.filter-bar a.active {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
 /* =============================
    TABLES
 ============================= */

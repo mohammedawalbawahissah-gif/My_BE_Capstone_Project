@@ -490,3 +490,37 @@ def patients(request):
         'selected_risk': risk_filter,
     }
     return render(request, "patients.html", context)
+
+# core/views.py
+from django.shortcuts import render
+from .models import Patient
+
+def patients(request):
+    # Filter by pregnancy risk
+    risk_filter = request.GET.get('risk', 'all')  # 'High', 'Medium', 'Low', 'all'
+    patients_qs = Patient.objects.all()
+    
+    if risk_filter in ['High', 'Medium', 'Low']:
+        patients_qs = patients_qs.filter(pregnancy_risk_level=risk_filter)
+
+    # Sort by column
+    sort_by = request.GET.get('sort', 'id')  # default sort by id
+    order = request.GET.get('order', 'asc')  # asc or desc
+
+    # Define allowed sortable fields
+    sortable_fields = ['age', 'gravida', 'parity', 'edd', 'last_name', 'first_name']
+    if sort_by in sortable_fields:
+        if order == 'desc':
+            patients_qs = patients_qs.order_by(f'-{sort_by}')
+        else:
+            patients_qs = patients_qs.order_by(sort_by)
+    else:
+        patients_qs = patients_qs.order_by('id')  # default fallback
+
+    context = {
+        'patients': patients_qs,
+        'selected_risk': risk_filter,
+        'sort_by': sort_by,
+        'order': order,
+    }
+    return render(request, "patients.html", context)

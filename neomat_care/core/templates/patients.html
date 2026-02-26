@@ -7,27 +7,88 @@
 
     {% if patients %}
     <div class="table-wrapper">
-        <table class="patients-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Patient ID</th>
-                    <th>Full Name</th>
-                    <th>Age</th>
-                    <th>Gender</th>
-                    <th>Marital Status</th>
-                    <th>Gravida</th>
-                    <th>Parity</th>
-                    <th>LMP</th>
-                    <th>EDD</th>
-                    <th>Diagnosis</th>
-                    <th>Pregnancy Risk</th>
-                    <th>Blood Group</th>
-                    <th>Contact</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
+    <div class="filter-bar">
+    <strong>Filter by Pregnancy Risk:</strong>
+    <a href="{% url 'patients' %}?risk=all" class="{% if selected_risk == 'all' %}active{% endif %}">All</a>
+    <a href="{% url 'patients' %}?risk=High" class="{% if selected_risk == 'High' %}active{% endif %}">High</a>
+    <a href="{% url 'patients' %}?risk=Medium" class="{% if selected_risk == 'Medium' %}active{% endif %}">Medium</a>
+    <a href="{% url 'patients' %}?risk=Low" class="{% if selected_risk == 'Low' %}active{% endif %}">Low</a>
+</div>
+    <table class="patients-table">
+    <thead>
+        <tr>
+            <th>Patient ID</th>
+            <th>
+                <a href="?{% if selected_risk != 'all' %}risk={{ selected_risk }}&{% endif %}sort=last_name&order={% if sort_by == 'last_name' and order == 'asc' %}desc{% else %}asc{% endif %}">
+                    Name
+                    {% if sort_by == 'last_name' %}
+                        {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a href="?{% if selected_risk != 'all' %}risk={{ selected_risk }}&{% endif %}sort=age&order={% if sort_by == 'age' and order == 'asc' %}desc{% else %}asc{% endif %}">
+                    Age
+                    {% if sort_by == 'age' %}
+                        {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a href="?{% if selected_risk != 'all' %}risk={{ selected_risk }}&{% endif %}sort=gravida&order={% if sort_by == 'gravida' and order == 'asc' %}desc{% else %}asc{% endif %}">
+                    Gravida
+                    {% if sort_by == 'gravida' %}
+                        {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a href="?{% if selected_risk != 'all' %}risk={{ selected_risk }}&{% endif %}sort=parity&order={% if sort_by == 'parity' and order == 'asc' %}desc{% else %}asc{% endif %}">
+                    Parity
+                    {% if sort_by == 'parity' %}
+                        {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a href="?{% if selected_risk != 'all' %}risk={{ selected_risk }}&{% endif %}sort=edd&order={% if sort_by == 'edd' and order == 'asc' %}desc{% else %}asc{% endif %}">
+                    EDD
+                    {% if sort_by == 'edd' %}
+                        {% if order == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>Pregnancy Risk</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for patient in patients %}
+        <tr>
+            <td>{{ patient.patient_id }}</td>
+            <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+            <td>{{ patient.age }}</td>
+            <td>{{ patient.gravida|default:"N/A" }}</td>
+            <td>{{ patient.parity|default:"N/A" }}</td>
+            <td>{{ patient.edd|date:"M d, Y"|default:"N/A" }}</td>
+            <td>
+                {% if patient.pregnancy_risk_level == "High" %}
+                    <span class="risk-badge high">High</span>
+                {% elif patient.pregnancy_risk_level == "Medium" %}
+                    <span class="risk-badge medium">Medium</span>
+                {% elif patient.pregnancy_risk_level == "Low" %}
+                    <span class="risk-badge low">Low</span>
+                {% else %}
+                    <span class="risk-badge unknown">N/A</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">No patients found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
                 {% for patient in patients %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
