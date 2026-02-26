@@ -11,6 +11,26 @@ class User(AbstractUser):
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
+# core/models.py
+class Patient(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    date_of_birth = models.DateField()
+    # Add other fields here
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+class Patient(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    date_of_birth = models.DateField()
+    gender = models.CharField(max_length=10)
+    # Add other fields as needed
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
 class HealthFacility(models.Model):
     LEVEL_CHOICES = (
         ('primary', 'Primary'),

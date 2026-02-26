@@ -9,6 +9,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from core.models import Referral, EmergencyCase, HealthFacility, Transport
+from django.contrib.auth.models import User
+from .models import Patient
+from .serializers import PatientSerializer
 from core.serializers import (
     RegisterUserSerializer,
     HealthFacilitySerializer,
@@ -18,9 +21,72 @@ from core.serializers import (
 from core.services.referral_engine import generate_referral
 
 # HOME / DASHBOARD
+
+from django.shortcuts import render
+
+def api_root(request):
+    # Render the home page template
+    return render(request, "home.html")
+
+# Basic page views
+
+from django.shortcuts import render
+from django.http import JsonResponse
+
+
+# ===================== WEB PAGES =====================
+
 def home(request):
     return render(request, "home.html")
 
+def patients(request):
+    return render(request, "patients.html")
+
+def referrals(request):
+    return render(request, "referrals.html")
+
+def emergency(request):
+    return render(request, "emergency.html")
+
+def facilities(request):
+    return render(request, "facilities.html")
+
+def transport(request):
+    return render(request, "transport.html")
+
+def login_view(request):
+    return render(request, "login.html")
+
+def logout_view(request):
+    return render(request, "logout.html")
+
+def register(request):
+    return render(request, "register.html")
+
+def profile(request):
+    return render(request, "profile.html")
+
+
+# ===================== API (JSON) =====================
+
+def api_home(request):
+    return JsonResponse({"message": "Welcome to Neomat Care API"})
+
+def api_patients(request):
+    return JsonResponse({"patients": []})
+
+def api_referrals(request):
+    return JsonResponse({"referrals": []})
+
+# Authentication views
+def login_view(request):
+    return render(request, "login.html")
+
+def logout_view(request):
+    return render(request, "logout.html")
+
+def register_user(request):
+    return render(request, "register.html")
 
 @login_required
 def home_view(request):
@@ -100,6 +166,42 @@ def logout_view(request):
 User = get_user_model()
 
 # -------------------- API Views --------------------
+
+# Simple welcome API
+class WelcomeAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({"message": "Welcome to Neomat Care API"}, status=status.HTTP_200_OK)
+
+class PatientListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Patient.objects.all()
+    serializer_class = PatientSerializer
+
+# Register user API
+class RegisterUserAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        if not username or not password:
+            return Response({"error": "Username and password required"}, status=status.HTTP_400_BAD_REQUEST)
+        user = User.objects.create_user(username=username, password=password)
+        return Response({"message": f"User {user.username} created"}, status=status.HTTP_201_CREATED)
+
+
+# Referral creation API
+class ReferralCreateAPIView(APIView):
+    def post(self, request):
+        patient_name = request.data.get("patient_name")
+        emergency_type = request.data.get("emergency_type")
+        if not patient_name or not emergency_type:
+            return Response({"error": "Patient name and emergency type required"}, status=status.HTTP_400_BAD_REQUEST)
+        # Here you would normally save to the Referral model
+        return Response({"message": f"Referral for {patient_name} ({emergency_type}) created"}, status=status.HTTP_201_CREATED)
+
+
 class RegisterUserAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterUserSerializer
