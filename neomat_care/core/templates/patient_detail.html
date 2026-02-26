@@ -1,28 +1,78 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Patient Details: {{ patient.first_name }} {{ patient.last_name }}</h1>
+<div class="patient-detail-container">
+    <h1>Patient Details: {{ patient.first_name }} {{ patient.last_name }}</h1>
+    <a href="{% url 'patients' %}" class="btn-back">Back to List</a>
+    <a href="{% url 'patient_edit' patient.id %}" class="btn-edit">Edit Patient</a>
 
-<ul>
-    <li><strong>Patient ID:</strong> {{ patient.patient_id }}</li>
-    <li><strong>Age:</strong> {{ patient.age }}</li>
-    <li><strong>Gender:</strong> {{ patient.gender }}</li>
-    <li><strong>Marital Status:</strong> {{ patient.marital_status }}</li>
-    <li><strong>Contact:</strong> {{ patient.contact|default:"N/A" }}</li>
-    <li><strong>Address:</strong> {{ patient.address|default:"N/A" }}</li>
-    <li><strong>Email:</strong> {{ patient.email|default:"N/A" }}</li>
-
-    <li><strong>Gravida:</strong> {{ patient.gravida|default:"N/A" }}</li>
-    <li><strong>Parity:</strong> {{ patient.parity|default:"N/A" }}</li>
-    <li><strong>LMP:</strong> {{ patient.lmp|date:"M d, Y"|default:"N/A" }}</li>
-    <li><strong>EDD:</strong> {{ patient.edd|date:"M d, Y"|default:"N/A" }}</li>
-    <li><strong>Pregnancy Risk Level:</strong> {{ patient.pregnancy_risk_level|default:"N/A" }}</li>
-
-    <li><strong>Diagnosis:</strong> {{ patient.diagnosis|default:"N/A" }}</li>
-    <li><strong>Blood Group:</strong> {{ patient.blood_group|default:"N/A" }}</li>
-    <li><strong>Allergies:</strong> {{ patient.allergies|default:"N/A" }}</li>
-    <li><strong>Chronic Conditions:</strong> {{ patient.chronic_conditions|default:"N/A" }}</li>
-</ul>
-
-<a href="{% url 'patient_edit' patient.id %}">Edit Patient</a>
+    <div class="patient-info">
+        <table class="patient-info-table">
+            <tbody>
+                <tr>
+                    <th>Patient ID</th>
+                    <td>{{ patient.patient_id }}</td>
+                </tr>
+                <tr>
+                    <th>Full Name</th>
+                    <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                </tr>
+                <tr>
+                    <th>Age</th>
+                    <td>{{ patient.age }}</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>{{ patient.gender }}</td>
+                </tr>
+                <tr>
+                    <th>Marital Status</th>
+                    <td>{{ patient.marital_status }}</td>
+                </tr>
+                <tr>
+                    <th>Gravida</th>
+                    <td>{{ patient.gravida|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <th>Parity</th>
+                    <td>{{ patient.parity|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <th>LMP</th>
+                    <td>{{ patient.lmp|date:"M d, Y"|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <th>EDD</th>
+                    <td>{{ patient.edd|date:"M d, Y"|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <th>Diagnosis</th>
+                    <td>{{ patient.diagnosis|default:"N/A" }}</td>
+                </tr>
+                <tr>
+    <th>Pregnancy Risk Level</th>
+    <td>
+        {% if patient.pregnancy_risk_level == "High" %}
+            <span class="risk-badge high">High</span>
+        {% elif patient.pregnancy_risk_level == "Medium" %}
+            <span class="risk-badge medium">Medium</span>
+        {% elif patient.pregnancy_risk_level == "Low" %}
+            <span class="risk-badge low">Low</span>
+        {% else %}
+            <span class="risk-badge unknown">N/A</span>
+        {% endif %}
+    </td>
+</tr>
+                <tr>
+                    <th>Blood Group</th>
+                    <td>{{ patient.blood_group|default:"N/A" }}</td>
+                </tr>
+                <tr>
+                    <th>Contact</th>
+                    <td>{{ patient.contact|default:"N/A" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

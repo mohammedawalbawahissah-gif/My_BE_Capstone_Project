@@ -263,3 +263,166 @@ input:focus, select:focus, textarea:focus {
     background: #ff4d4d !important;
     color: white !important;
 }
+
+.patients-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.patients-container h1 {
+    margin-bottom: 15px;
+}
+
+.btn-add {
+    display: inline-block;
+    margin-bottom: 15px;
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn-add:hover {
+    background-color: #45a049;
+}
+
+.table-wrapper {
+    overflow-x: auto; /* enables horizontal scroll on small screens */
+}
+
+.patients-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px; /* keep table readable */
+}
+
+.patients-table th, .patients-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.patients-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.patients-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.patients-table tr:hover {
+    background-color: #ddd;
+}
+
+@media screen and (max-width: 768px) {
+    .patients-table th, .patients-table td {
+        padding: 6px;
+        font-size: 12px;
+    }
+}
+
+/* Shared for detail & form */
+.patient-detail-container,
+.patient-form-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.patient-detail-container h1,
+.patient-form-container h1 {
+    margin-bottom: 15px;
+}
+
+.btn-back, .btn-edit, .btn-submit {
+    display: inline-block;
+    margin-bottom: 15px;
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn-back { background-color: #888; }
+.btn-back:hover { background-color: #666; }
+.btn-edit:hover, .btn-submit:hover { background-color: #45a049; }
+
+/* Patient info table */
+.patient-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.patient-info-table th,
+.patient-info-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.patient-info-table th {
+    background-color: #f2f2f2;
+    width: 200px;
+}
+
+/* Form grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 7px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+/* Pregnancy Risk Level Badges */
+.risk-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 12px;
+    display: inline-block;
+    text-align: center;
+    min-width: 50px;
+}
+
+/* Color codes */
+.risk-badge.high {
+    background-color: #e74c3c; /* red */
+}
+
+.risk-badge.medium {
+    background-color: #f1c40f; /* yellow/orange */
+    color: #000;
+}
+
+.risk-badge.low {
+    background-color: #2ecc71; /* green */
+}
+
+.risk-badge.unknown {
+    background-color: #7f8c8d; /* gray */
+}

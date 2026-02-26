@@ -5,12 +5,17 @@ from rest_framework import status, generics
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view
 from django.contrib.auth import get_user_model
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from core.models import Referral, EmergencyCase, HealthFacility, Transport
 from django.contrib.auth.models import User
 from .models import Patient
+from django.shortcuts import render, get_object_or_404, redirect
+from .forms import PatientForm
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from core.services.referral_engine import generate_referral
 from .serializers import PatientSerializer
 from core.serializers import (
     RegisterUserSerializer,
@@ -18,7 +23,7 @@ from core.serializers import (
     TransportSerializer,
     ReferralSerializer
 )
-from core.services.referral_engine import generate_referral
+
 
 # HOME / DASHBOARD
 
@@ -29,10 +34,6 @@ def api_root(request):
     return render(request, "home.html")
 
 # Basic page views
-
-from django.shortcuts import render
-from django.http import JsonResponse
-
 
 # ===================== WEB PAGES =====================
 
@@ -341,10 +342,6 @@ def api_root(request):
         }
     })
 
-from django.contrib.auth.models import User
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
 
 @csrf_exempt
 def register_user(request):
@@ -380,7 +377,6 @@ def login_user(request):
         else:
             return JsonResponse({"error": "Invalid credentials"}, status=401)
 
-from .models import EmergencyCase  # make sure this model exists
 
 @csrf_exempt
 def create_emergency(request):
@@ -394,7 +390,6 @@ def create_emergency(request):
         )
         return JsonResponse({"message": "Emergency recorded", "case_id": case.id})
 
-from .models import Referral
 
 @csrf_exempt
 def create_referral(request):
@@ -411,7 +406,6 @@ def create_referral(request):
         )
         return JsonResponse({"message": "Referral created", "referral_id": referral.id})
 
-from .models import Transport
 
 @csrf_exempt
 def dispatch_transport(request):
@@ -432,9 +426,6 @@ def dispatch_transport(request):
 
         return JsonResponse({"message": "Ambulance dispatched successfully"})
 
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Patient
-from .forms import PatientForm
 
 # List all patients
 def patients(request):
@@ -476,3 +467,26 @@ def patient_delete(request, pk):
         patient.delete()
         return redirect('patients')
     return render(request, 'patient_confirm_delete.html', {'patient': patient})
+
+# core/views.py
+
+def patients(request):
+    # Get query parameter from URL for filtering/sorting
+    risk_filter = request.GET.get('risk', 'all')  # 'High', 'Medium', 'Low', or 'all'
+    
+    if risk_filter in ['High', 'Medium', 'Low']:
+        patients = Patient.objects.filter(pregnancy_risk_level=risk_filter).order_by('-id')
+    else:
+        # Default: show all, sorted by risk priority: High > Medium > Low
+        patients = Patient.objects.all()
+        # Annotate sorting key: High=1, Medium=2, Low=3, Unknown=4
+        patients = sorted(
+            patients,
+            key=lambda p: {'High':1, 'Medium':2, 'Low':3}.get(p.pregnancy_risk_level, 4)
+        )
+    
+    context = {
+        'patients': patients,
+        'selected_risk': risk_filter,
+    }
+    return render(request, "patients.html", context)

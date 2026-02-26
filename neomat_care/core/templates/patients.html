@@ -1,45 +1,71 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Patients List</h1>
+<div class="patients-container">
+    <h1>Patients List</h1>
+    <a href="{% url 'patient_add' %}" class="btn-add">Add New Patient</a>
 
-{% if patients %}
-    <table class="patients-table">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Patient ID</th>
-                <th>Full Name</th>
-                <th>Age</th>
-                <th>Gender</th>
-                <th>Marital Status</th>
-                <th>Pregnancy Risk</th>
-                <th>Diagnosis</th>
-                <th>Contact</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for patient in patients %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ patient.patient_id }}</td>
-                <td>{{ patient.first_name }} {{ patient.last_name }}</td>
-                <td>{{ patient.age }}</td>
-                <td>{{ patient.gender }}</td>
-                <td>{{ patient.marital_status }}</td>
-                <td>{{ patient.pregnancy_risk_level|default:"N/A" }}</td>
-                <td>{{ patient.diagnosis|default:"N/A" }}</td>
-                <td>{{ patient.contact|default:"N/A" }}</td>
-                <td>
-                    <a href="{% url 'patient_detail' patient.id %}">View</a> |
-                    <a href="{% url 'patient_edit' patient.id %}">Edit</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
+    {% if patients %}
+    <div class="table-wrapper">
+        <table class="patients-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Patient ID</th>
+                    <th>Full Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Marital Status</th>
+                    <th>Gravida</th>
+                    <th>Parity</th>
+                    <th>LMP</th>
+                    <th>EDD</th>
+                    <th>Diagnosis</th>
+                    <th>Pregnancy Risk</th>
+                    <th>Blood Group</th>
+                    <th>Contact</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ patient.patient_id }}</td>
+                    <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                    <td>{{ patient.age }}</td>
+                    <td>{{ patient.gender }}</td>
+                    <td>{{ patient.marital_status }}</td>
+                    <td>{{ patient.gravida|default:"N/A" }}</td>
+                    <td>{{ patient.parity|default:"N/A" }}</td>
+                    <td>{{ patient.lmp|date:"M d, Y"|default:"N/A" }}</td>
+                    <td>{{ patient.edd|date:"M d, Y"|default:"N/A" }}</td>
+                    <td>{{ patient.diagnosis|default:"N/A" }}</td>
+                    <td>
+    {% if patient.pregnancy_risk_level == "High" %}
+        <span class="risk-badge high">High</span>
+    {% elif patient.pregnancy_risk_level == "Medium" %}
+        <span class="risk-badge medium">Medium</span>
+    {% elif patient.pregnancy_risk_level == "Low" %}
+        <span class="risk-badge low">Low</span>
+    {% else %}
+        <span class="risk-badge unknown">N/A</span>
+    {% endif %}
+</td>
+                    <td>{{ patient.blood_group|default:"N/A" }}</td>
+                    <td>{{ patient.contact|default:"N/A" }}</td>
+                    <td>
+                        <a href="{% url 'patient_detail' patient.id %}">View</a> |
+                        <a href="{% url 'patient_edit' patient.id %}">Edit</a> |
+                        <a href="{% url 'patient_delete' patient.id %}">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
     <p>No patients found.</p>
-{% endif %}
+    {% endif %}
+</div>
 {% endblock %}
