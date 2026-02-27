@@ -7,6 +7,17 @@
 
     {% if patients %}
     <div class="table-wrapper">
+    <form method="get" class="search-form">
+    <input type="text" name="search" placeholder="Search by ID, Name, Diagnosis" value="{{ search_query }}">
+    {% if selected_risk != 'all' %}
+        <input type="hidden" name="risk" value="{{ selected_risk }}">
+    {% endif %}
+    {% if sort_by %}
+        <input type="hidden" name="sort" value="{{ sort_by }}">
+        <input type="hidden" name="order" value="{{ order }}">
+    {% endif %}
+    <button type="submit">Search</button>
+</form>
     <div class="filter-bar">
     <strong>Filter by Pregnancy Risk:</strong>
     <a href="{% url 'patients' %}?risk=all" class="{% if selected_risk == 'all' %}active{% endif %}">All</a>
@@ -61,57 +72,46 @@
             <th>Pregnancy Risk</th>
         </tr>
     </thead>
-    <tbody>
-        {% for patient in patients %}
-        <tr>
-            <td>{{ patient.patient_id }}</td>
-            <td>{{ patient.first_name }} {{ patient.last_name }}</td>
-            <td>{{ patient.age }}</td>
-            <td>{{ patient.gravida|default:"N/A" }}</td>
-            <td>{{ patient.parity|default:"N/A" }}</td>
-            <td>{{ patient.edd|date:"M d, Y"|default:"N/A" }}</td>
-            <td>
-                {% if patient.pregnancy_risk_level == "High" %}
-                    <span class="risk-badge high">High</span>
-                {% elif patient.pregnancy_risk_level == "Medium" %}
-                    <span class="risk-badge medium">Medium</span>
-                {% elif patient.pregnancy_risk_level == "Low" %}
-                    <span class="risk-badge low">Low</span>
-                {% else %}
-                    <span class="risk-badge unknown">N/A</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7">No patients found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-                {% for patient in patients %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ patient.patient_id }}</td>
-                    <td>{{ patient.first_name }} {{ patient.last_name }}</td>
-                    <td>{{ patient.age }}</td>
-                    <td>{{ patient.gender }}</td>
-                    <td>{{ patient.marital_status }}</td>
-                    <td>{{ patient.gravida|default:"N/A" }}</td>
-                    <td>{{ patient.parity|default:"N/A" }}</td>
-                    <td>{{ patient.lmp|date:"M d, Y"|default:"N/A" }}</td>
-                    <td>{{ patient.edd|date:"M d, Y"|default:"N/A" }}</td>
-                    <td>{{ patient.diagnosis|default:"N/A" }}</td>
-                    <td>
-    {% if patient.pregnancy_risk_level == "High" %}
-        <span class="risk-badge high">High</span>
-    {% elif patient.pregnancy_risk_level == "Medium" %}
-        <span class="risk-badge medium">Medium</span>
-    {% elif patient.pregnancy_risk_level == "Low" %}
-        <span class="risk-badge low">Low</span>
-    {% else %}
-        <span class="risk-badge unknown">N/A</span>
+    </table>
+        <tbody>
+            <div class="pagination">
+                {% if patients.has_previous %}
+        <a href="?{% if selected_risk != 'all' %}risk={{ selected_risk }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&order={{ order }}&{% endif %}page={{ patients.previous_page_number }}">« Previous</a>
     {% endif %}
+
+    <span>Page {{ patients.number }} of {{ patients.paginator.num_pages }}</span>
+
+    {% if patients.has_next %}
+        <a href="?{% if selected_risk != 'all' %}risk={{ selected_risk }}&{% endif %}{% if sort_by %}sort={{ sort_by }}&order={{ order }}&{% endif %}page={{ patients.next_page_number }}">Next »</a>
+    {% endif %}
+</div>    
+ <tbody>
+{% for patient in patients %}
+<tr>
+    <td>{{ patient.patient_id }}</td>
+    <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+    <td>{{ patient.age }}</td>
+    <td>{{ patient.gravida|default:"N/A" }}</td>
+    <td>{{ patient.parity|default:"N/A" }}</td>
+    <td>{{ patient.edd|date:"M d, Y"|default:"N/A" }}</td>
+    <td>
+        {% if patient.pregnancy_risk_level == "High" %}
+            <span class="risk-badge high">High</span>
+        {% elif patient.pregnancy_risk_level == "Medium" %}
+            <span class="risk-badge medium">Medium</span>
+        {% elif patient.pregnancy_risk_level == "Low" %}
+            <span class="risk-badge low">Low</span>
+        {% else %}
+            <span class="risk-badge unknown">N/A</span>
+        {% endif %}
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="7">No patients found.</td>
+</tr>
+{% endfor %}
+</tbody>
 </td>
                     <td>{{ patient.blood_group|default:"N/A" }}</td>
                     <td>{{ patient.contact|default:"N/A" }}</td>

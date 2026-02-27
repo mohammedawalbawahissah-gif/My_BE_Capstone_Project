@@ -4,9 +4,9 @@ from django.urls import path, include
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # WEBSITE (HTML)
+    # Web app
     path("", include("core.urls")),
 
-    # API (JSON ONLY)
+    # REST API
     path("api/", include("core.api_urls")),
 ]

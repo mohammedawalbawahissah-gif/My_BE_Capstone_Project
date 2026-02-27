@@ -216,6 +216,59 @@ tr:hover {
     background: #f2f6ff;
 }
 
+/* Pagination styling */
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a {
+    text-decoration: none;
+    color: #333;
+    background-color: #f2f2f2;
+    padding: 5px 10px;
+    margin: 0 3px;
+    border-radius: 4px;
+}
+
+.pagination a:hover {
+    background-color: #ddd;
+}
+
+.pagination span {
+    margin: 0 5px;
+    font-weight: bold;
+}
+
+/* Search form styling */
+.search-form {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.search-form input[type="text"] {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-form button {
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background-color: #45a049;
+}
+
 /* =============================
    STATUS BADGES
 ============================= */
