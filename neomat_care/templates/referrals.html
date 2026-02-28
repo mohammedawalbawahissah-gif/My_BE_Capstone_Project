@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Referrals{% endblock %}
+
+{% block content %}
+
+<h2>Emergency Referrals</h2>
+
+<a href="{% url 'emergency' %}" class="btn">+ Create Emergency Referral</a>
+
+<br><br>
+
+<table border="1" cellpadding="8">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Patient</th>
+            <th>Condition</th>
+            <th>Referring Facility</th>
+            <th>Receiving Facility</th>
+            <th>Transport</th>
+            <th>Status</th>
+            <th>Time Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for referral in referrals %}
+        <tr>
+            <td>{{ referral.id }}</td>
+            <td>{{ referral.patient.name }}</td>
+            <td>{{ referral.condition }}</td>
+            <td>{{ referral.from_facility.name }}</td>
+            <td>{{ referral.to_facility.name }}</td>
+            <td>
+                {% if referral.transport %}
+                    {{ referral.transport.vehicle_number }}
+                {% else %}
+                    Not Assigned
+                {% endif %}
+            </td>
+            <td>
+                {% if referral.status == "pending" %}
+                    🟡 Pending
+                {% elif referral.status == "accepted" %}
+                    🔵 Accepted
+                {% elif referral.status == "in_transit" %}
+                    🚑 In Transit
+                {% elif referral.status == "completed" %}
+                    🟢 Completed
+                {% else %}
+                    🔴 Cancelled
+                {% endif %}
+            </td>
+            <td>{{ referral.created_at }}</td>
+
+            <td>
+                <a href="{% url 'referral_detail' referral.id %}">View</a>
+            </td>
+        </tr>
+
+        {% empty %}
+        <tr>
+            <td colspan="9">No referrals created yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

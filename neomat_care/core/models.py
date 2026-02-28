@@ -1,12 +1,8 @@
-# core/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
 
-# =========================
-# CUSTOM USER
-# =========================
 class User(AbstractUser):
     ROLE_CHOICES = (
         ('health_worker', 'Health Worker'),
@@ -20,9 +16,6 @@ class User(AbstractUser):
         return f"{self.username} ({self.get_role_display()})"
 
 
-# =========================
-# HEALTH FACILITY
-# =========================
 class HealthFacility(models.Model):
     name = models.CharField(max_length=150)
     location = models.CharField(max_length=150)
@@ -32,9 +25,6 @@ class HealthFacility(models.Model):
         return self.name
 
 
-# =========================
-# TRANSPORT
-# =========================
 class Transport(models.Model):
     STATUS_CHOICES = (
         ('available', 'Available'),
@@ -42,7 +32,7 @@ class Transport(models.Model):
         ('maintenance', 'Maintenance'),
     )
     vehicle_number = models.CharField(max_length=50)
-    driver_name = models.CharField(max_length=100)
+    driver = models.CharField(max_length=100)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
     facility = models.ForeignKey(HealthFacility, on_delete=models.CASCADE, related_name="transports")
 
@@ -50,9 +40,6 @@ class Transport(models.Model):
         return f"{self.vehicle_number} ({self.get_status_display()})"
 
 
-# =========================
-# PATIENT
-# =========================
 class Patient(models.Model):
     RISK_LEVEL_CHOICES = (
         ('High', 'High'),
@@ -77,7 +64,7 @@ class Patient(models.Model):
 
     gravida = models.PositiveIntegerField(blank=True, null=True)
     parity = models.PositiveIntegerField(blank=True, null=True)
-    edd = models.DateField(blank=True, null=True)  # Estimated delivery date
+    edd = models.DateField(blank=True, null=True)
     marital_status = models.CharField(max_length=20, blank=True, null=True)
     pregnancy_risk_level = models.CharField(max_length=10, choices=RISK_LEVEL_CHOICES, blank=True, null=True)
 
@@ -86,21 +73,7 @@ class Patient(models.Model):
     diagnosis = models.TextField(blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
 
-    pregnancy_risk_level = models.CharField(
-        max_length=20,
-        choices=[("Low", "Low"), ("Medium", "Medium"), ("High", "High")],
-        default="Low",
-        null=True,
-        blank=True
-    )    
-
     next_of_kin = models.CharField(max_length=100, blank=True, null=True)
-    pregnancy_risk = models.CharField(
-        max_length=10,
-        choices=[('High', 'High'), ('Medium', 'Medium'), ('Low', 'Low')],
-        blank=True,
-        null=Trueco
-    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -108,9 +81,6 @@ class Patient(models.Model):
         return f"{self.patient_id} - {self.first_name} {self.last_name}"
 
 
-# =========================
-# EMERGENCY
-# =========================
 class Emergency(models.Model):
     SEVERITY_CHOICES = (
         ('Critical', 'Critical'),
@@ -126,17 +96,16 @@ class Emergency(models.Model):
     description = models.TextField()
     severity = models.CharField(max_length=10, choices=SEVERITY_CHOICES, default='Moderate')
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    active = models.BooleanField(default=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
+    status = models.CharField(
+    max_length=20,
+    default="active"
+)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Emergency: {self.patient.first_name} ({self.severity})"
 
 
-# =========================
-# REFERRAL
-# =========================
 class Referral(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
@@ -162,3 +131,8 @@ class Referral(models.Model):
 
     def __str__(self):
         return f"Referral for {self.emergency.patient.first_name} ({self.status})"
+
+    @property
+    def patient(self):
+        # Allows templates to do referral.patient.name
+        return self.emergency.patient

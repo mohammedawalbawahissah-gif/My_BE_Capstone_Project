@@ -1,13 +1,9 @@
-# core/serializers.py
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Patient, HealthFacility, Transport, Referral, Emergency
 
 User = get_user_model()
 
-# ------------------------
-# USER REGISTRATION
-# ------------------------
 class RegisterUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -25,27 +21,18 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         return user
 
 
-# ------------------------
-# PATIENT
-# ------------------------
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = "__all__"
 
 
-# ------------------------
-# EMERGENCY
-# ------------------------
 class EmergencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Emergency
         fields = "__all__"
 
 
-# ------------------------
-# REFERRAL
-# ------------------------
 class ReferralSerializer(serializers.ModelSerializer):
     emergency = EmergencySerializer(read_only=True)
     referring_facility = serializers.StringRelatedField()
@@ -57,18 +44,11 @@ class ReferralSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-# ------------------------
-# HEALTH FACILITY
-# ------------------------
 class HealthFacilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = HealthFacility
         fields = "__all__"
 
-
-# ------------------------
-# TRANSPORT
-# ------------------------
 class TransportSerializer(serializers.ModelSerializer):
     facility = HealthFacilitySerializer(read_only=True)
 

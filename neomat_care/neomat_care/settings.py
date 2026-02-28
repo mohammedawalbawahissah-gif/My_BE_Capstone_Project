@@ -12,39 +12,30 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url
 import warnings
+from datetime import timedelta
 
 warnings.filterwarnings('ignore', category=RuntimeWarning, module='django.db.models.base')
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-kh0ib&b^kopf#b0@6iq$kap8b-2joiszg=&d0frw9oyj_m!2-7'
-
-# SECURITY
 DEBUG = True
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
 
-# Application definition
-
 INSTALLED_APPS = [
+    # Django default apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
     'rest_framework',
     'rest_framework.authtoken',
     'drf_yasg',
-]    
+    'core',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -57,17 +48,16 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'neomat_care.urls'
-
-
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
+WSGI_APPLICATION = 'neomat_care.wsgi.application'
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",  # Required
-        "DIRS": [BASE_DIR / "templates"],  # Add your own templates folder if needed
-        "APP_DIRS": True,  # Looks for templates inside each installed app
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+
+        "DIRS": [BASE_DIR / "templates"],
+
+        "APP_DIRS": True,
+
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -76,78 +66,46 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
             ],
         },
-    },
+    }
 ]
-
-WSGI_APPLICATION = 'neomat_care.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-import dj_database_url
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'neomat_db',
-        'USER': 'mohammedawalbawahissah',  
-        'PASSWORD': 'admin', 
+        'USER': 'mohammedawalbawahissah',
+        'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
-# Static and media files
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "core/static",
+    BASE_DIR / "core/static"
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 AUTH_USER_MODEL = 'core.User'
 
-from datetime import timedelta
-
-# JWT Auth
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -161,3 +119,13 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MIGRATION_MODULES = {
+    "core": "core.migrations"
+}
+
+LOGIN_REDIRECT_URL = "/dashboard/"
+LOGOUT_REDIRECT_URL = "/login/"
+LOGIN_URL = "/login/"

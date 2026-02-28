@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard — Neomat Care
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard container">
+
+    <div class="dashboard-header">
+        <div>
+            <h2>Welcome to Neomat Care</h2>
+            <p class="dashboard-subtitle">
+                Maternal Emergency Referral Monitoring System
+            </p>
+        </div>
+    </div>
+
+    <div class="dashboard-cards">
+
+        <div class="dashboard-card">
+            <div class="card-title">Total Patients</div>
+            <div class="card-number">
+                {{ total_patients|default:"0" }}
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-title">Active Referrals</div>
+            <div class="card-number">
+                {{ active_referrals|default:"0" }}
+            </div>
+        </div>
+
+        <div class="dashboard-card emergency-blink">
+            <div class="card-title">Emergency Alerts</div>
+            <div class="card-number">
+                {{ emergencies|default:"0" }}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
