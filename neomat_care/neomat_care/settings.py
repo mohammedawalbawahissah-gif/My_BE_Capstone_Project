@@ -19,9 +19,9 @@ warnings.filterwarnings('ignore', category=RuntimeWarning, module='django.db.mod
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-kh0ib&b^kopf#b0@6iq$kap8b-2joiszg=&d0frw9oyj_m!2-7'
-DEBUG = True
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
+SECRET_KEY = os.environ.get('SECRET_KEY')
+DEBUG = False
+ALLOWED_HOSTS = ['neomat_care.onrender.com']
 
 INSTALLED_APPS = [
     # Django default apps
@@ -45,6 +45,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'neomat_care.urls'
@@ -69,15 +70,10 @@ TEMPLATES = [
     }
 ]
 
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'neomat_db',
-        'USER': 'mohammedawalbawahissah',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -94,12 +90,12 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
     BASE_DIR / "core/static"
 ]
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
