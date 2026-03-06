@@ -8,7 +8,8 @@ Dashboard — Neomat Care
 
 <div class="dashboard container">
 
-    <div class="dashboard-header">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header mb-4 d-flex justify-content-between align-items-center">
         <div>
             <h2>Welcome to Neomat Care</h2>
             <p class="dashboard-subtitle">
@@ -17,29 +18,119 @@ Dashboard — Neomat Care
         </div>
     </div>
 
-    <div class="dashboard-cards">
-
-        <div class="dashboard-card">
+    <!-- Dashboard Summary Cards -->
+    <div class="dashboard-cards mb-4 d-flex gap-3 flex-wrap">
+        <div class="dashboard-card card p-3 text-center flex-fill">
             <div class="card-title">Total Patients</div>
-            <div class="card-number">
-                {{ total_patients|default:"0" }}
-            </div>
+            <div class="card-number">{{ total_patients|default:"0" }}</div>
         </div>
 
-        <div class="dashboard-card">
+        <div class="dashboard-card card p-3 text-center flex-fill">
             <div class="card-title">Active Referrals</div>
-            <div class="card-number">
-                {{ active_referrals|default:"0" }}
-            </div>
+            <div class="card-number">{{ active_referrals|default:"0" }}</div>
         </div>
 
-        <div class="dashboard-card emergency-blink">
+        <div class="dashboard-card card p-3 text-center emergency-blink flex-fill">
             <div class="card-title">Emergency Alerts</div>
-            <div class="card-number">
-                {{ emergencies|default:"0" }}
+            <div class="card-number">{{ emergencies|default:"0" }}</div>
+        </div>
+    </div>
+
+    <!-- 🚨 Emergency Alerts Panel -->
+    <div class="alert alert-danger p-3 mb-4 rounded shadow-sm" role="alert">
+        <h4 class="alert-heading">🚨 High Risk Pregnancy Alerts</h4>
+        {% if emergency_alerts %}
+            <ul class="mb-0">
+                {% for alert in emergency_alerts %}
+                    <li>
+                        {{ alert.patient_name }} — High Risk Pregnancy — {{ alert.timestamp|date:"M d H:i" }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="mb-0">No emergency alerts</p>
+        {% endif %}
+    </div>
+
+    <!-- ⚠ High Risk Patients Card -->
+    <div class="card p-3 border rounded shadow-sm mb-4">
+        <h3 class="mb-3">⚠ High Risk Patients</h3>
+        {% if high_risk_patients %}
+            <ul class="list-unstyled mb-0">
+                {% for patient in high_risk_patients %}
+                    <li class="mb-1">
+                        <span class="risk-badge risk-high bg-danger text-white px-2 py-1 rounded">
+                            {{ patient.first_name }} {{ patient.last_name }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted mb-0">No high risk patients</p>
+        {% endif %}
+    </div>    
+
+    <!-- 🚑 Transport Panel -->
+    <div class="card p-3 border rounded shadow-sm mb-4">
+        <h3 class="mb-3">🚑 Transport / Ambulance Status</h3>
+        {% if transports %}
+            <ul class="list-unstyled mb-0">
+                {% for t in transports %}
+                    <li class="mb-1">
+                        <span class="badge bg-info text-dark px-2 py-1 rounded">
+                            {{ t.patient.first_name }} {{ t.patient.last_name }} —
+                            Ambulance: {{ t.ambulance_id }} —
+                            Status: {{ t.status }}
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted mb-0">No transport assignments</p>
+        {% endif %}
+    </div>
+
+    <!-- 🏥 Health Facilities Panel -->
+    <div class="row mb-4">
+        <!-- Referring Facilities -->
+        <div class="col-md-6 mb-3">
+            <div class="card p-3 border rounded shadow-sm h-100">
+                <h3 class="mb-3">🏥 Referring Facilities</h3>
+                {% if referring_facilities %}
+                    <ul class="list-unstyled mb-0">
+                        {% for facility in referring_facilities %}
+                            <li class="mb-1">
+                                <span class="badge bg-secondary px-2 py-1 rounded">
+                                    {{ facility.name }} — {{ facility.location }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">No referring facilities</p>
+                {% endif %}
             </div>
         </div>
 
+        <!-- Receiving Facilities -->
+        <div class="col-md-6 mb-3">
+            <div class="card p-3 border rounded shadow-sm h-100">
+                <h3 class="mb-3">🏥 Receiving Facilities</h3>
+                {% if receiving_facilities %}
+                    <ul class="list-unstyled mb-0">
+                        {% for facility in receiving_facilities %}
+                            <li class="mb-1">
+                                <span class="badge bg-success px-2 py-1 rounded">
+                                    {{ facility.name }} — {{ facility.location }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">No receiving facilities</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
 
 </div>

@@ -15,6 +15,10 @@ Patients List
                 Maternal patient records management system
             </p>
         </div>
+        
+        <a href="{% url 'emergency_create' %}" class="btn btn-danger">
+            Create Emergency Referral
+        </a>
 
         <a href="{% url 'patient_add' %}" class="btn btn-success">
             + Add New Patient
@@ -112,18 +116,6 @@ Patients List
                             {{ patient.edd|date:"M d, Y"|default:"N/A" }}
                         </td>
 
-                        <td>
-                            <span class="risk-badge
-                                {% if patient.pregnancy_risk == 'High' %}risk-high
-                                {% elif patient.pregnancy_risk == 'Medium' %}risk-medium
-                                {% elif patient.pregnancy_risk == 'Low' %}risk-low
-                                {% else %}risk-unknown
-                                {% endif %}
-                            ">
-                                {{ patient.pregnancy_risk|default:"N/A" }}
-                            </span>
-                        </td>
-
                         <td class="action-group">
 
                             <a href="{% url 'patient_edit' patient.id %}"
@@ -159,32 +151,23 @@ Patients List
 
         <!-- Pagination -->
         {% if patients.has_other_pages %}
+    <div class="pagination">
 
-            <div class="pagination">
+        {% if patients.has_previous %}
+            <a href="?page={{ patients.previous_page_number }}{% if selected_risk %}&risk={{ selected_risk }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+                &laquo; Previous
+            </a>
+        {% endif %}
 
-                {% if patients.has_previous %}
-                    <a href="?page={{ patients.previous_page_number }}">
-                        &laquo; Previous
-                    </a>
-                {% endif %}
+        <span>
+            Page {{ patients.number }} of {{ patients.paginator.num_pages }}
+        </span>
 
-                <span>
-                    Page {{ patients.number }}
-                    of {{ patients.paginator.num_pages }}
-                </span>
-
-                {% if patients.has_next %}
-                    <a href="?page={{ patients.next_page_number }}">
-                        Next &raquo;
-                    </a>
-                {% endif %}
-
-            </div>
-
+        {% if patients.has_next %}
+            <a href="?page={{ patients.next_page_number }}{% if selected_risk %}&risk={{ selected_risk }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+                Next &raquo;
+            </a>
         {% endif %}
 
     </div>
-
-</div>
-
-{% endblock %}
+{% endif %}

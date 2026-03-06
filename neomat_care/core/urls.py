@@ -28,4 +28,9 @@ urlpatterns = [
     path("transport/", views.transport, name="transport"),
 
     path("emergency/", views.emergency_view, name="emergency"),
+
+    path('emergency/create/', views.emergency_create, name='emergency_create'),
+
+    path("patients/<int:patient_id>/edit/", views.patient_edit, name="patient_edit"),
+    path("patients/<int:patient_id>/delete/", views.patient_delete, name="patient_delete"),
 ]

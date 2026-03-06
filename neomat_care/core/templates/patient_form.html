@@ -79,17 +79,17 @@
                 </tr>
 
                 <tr>
-                    <th>Pregnancy Risk</th>
+                    <th>Patient Pregnancy Risk Level</th>
                     <td>
 
                         <span class="risk-badge
-                            {% if patient.pregnancy_risk == 'High' %}risk-high
-                            {% elif patient.pregnancy_risk == 'Medium' %}risk-medium
-                            {% elif patient.pregnancy_risk == 'Low' %}risk-low
+                            {% if patient.pregnancy_risk_level == 'High' %}risk-high
+                            {% elif patient.pregnancy_risk_level == 'Medium' %}risk-medium
+                            {% elif patient.pregnancy_risk_level == 'Low' %}risk-low
                             {% else %}risk-unknown
                             {% endif %}
                         ">
-                            {{ patient.pregnancy_risk|default:"N/A" }}
+                             {{ patient.get_pregnancy_risk_level_display }}
                         </span>
 
                     </td>

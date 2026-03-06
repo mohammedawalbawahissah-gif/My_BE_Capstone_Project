@@ -1,5 +1,6 @@
 from django import forms
 from .models import Patient, Emergency
+from .models import EmergencyAlert 
 
 
 class PatientForm(forms.ModelForm):
@@ -33,7 +34,6 @@ class PatientForm(forms.ModelForm):
             "edd": forms.DateInput(attrs={"type": "date"}),
         }
 
-
 class EmergencyForm(forms.ModelForm):
     class Meta:
         model = Emergency
@@ -45,4 +45,12 @@ class EmergencyForm(forms.ModelForm):
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4, "placeholder": "Describe the emergency"}),
             "severity": forms.Select(),
+        }
+
+class EmergencyAlertForm(forms.ModelForm):
+    class Meta:
+        model = EmergencyAlert  # or EmergencyReferral
+        fields = ['patient', 'alert_type', 'description']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
         }

@@ -16,13 +16,24 @@ class User(AbstractUser):
         return f"{self.username} ({self.get_role_display()})"
 
 
-class HealthFacility(models.Model):
-    name = models.CharField(max_length=150)
-    location = models.CharField(max_length=150)
-    capacity = models.PositiveIntegerField(default=10)
+FACILITY_TYPE_CHOICES = [
+    ('Hospital', 'Hospital'),
+    ('Clinic', 'Clinic'),
+    ('Health Center', 'Health Center'),
+]
 
-    def __str__(self):
-        return self.name
+class HealthFacility(models.Model):
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    facility_type = models.CharField(
+    max_length=50,
+    choices=FACILITY_TYPE_CHOICES,
+    default='Health Center'  # <- default set here
+)
+
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    facility_type = models.CharField(max_length=50, choices=FACILITY_TYPE_CHOICES)
 
 
 class Transport(models.Model):
@@ -40,12 +51,22 @@ class Transport(models.Model):
         return f"{self.vehicle_number} ({self.get_status_display()})"
 
 
+    
+
 class Patient(models.Model):
-    RISK_LEVEL_CHOICES = (
-        ('High', 'High'),
-        ('Medium', 'Medium'),
+
+    RISK_LEVEL_CHOICES = [
         ('Low', 'Low'),
+        ('Medium', 'Medium'),
+        ('High', 'High'),
+    ]
+
+    pregnancy_risk_level = models.CharField(
+        max_length=10,
+        choices=RISK_LEVEL_CHOICES,
+        default='Low'
     )
+
     GENDER_CHOICES = (
         ('Male', 'Male'),
         ('Female', 'Female'),
@@ -66,7 +87,6 @@ class Patient(models.Model):
     parity = models.PositiveIntegerField(blank=True, null=True)
     edd = models.DateField(blank=True, null=True)
     marital_status = models.CharField(max_length=20, blank=True, null=True)
-    pregnancy_risk_level = models.CharField(max_length=10, choices=RISK_LEVEL_CHOICES, blank=True, null=True)
 
     blood_type = models.CharField(max_length=3, blank=True, null=True)
     allergies = models.TextField(blank=True, null=True)
@@ -80,6 +100,47 @@ class Patient(models.Model):
     def __str__(self):
         return f"{self.patient_id} - {self.first_name} {self.last_name}"
 
+def calculate_risk_level(self):
+    """
+    Simple maternal risk assessment
+    """
+
+    # High risk conditions
+    if self.age and self.age >= 35:
+        return "High"
+
+    if self.gravida and self.gravida >= 5:
+        return "High"
+
+    if self.parity and self.parity >= 4:
+        return "High"
+
+    if self.diagnosis:
+        keywords = ["hypertension", "preeclampsia", "bleeding", "diabetes"]
+        for word in keywords:
+            if word in self.diagnosis.lower():
+                return "High"
+
+    # Medium risk
+    if self.gravida and self.gravida >= 3:
+        return "Medium"
+
+    return "Low"
+
+def save(self, *args, **kwargs):
+
+    # Calculate risk level automatically
+    self.pregnancy_risk_level = self.calculate_risk_level()
+
+    super().save(*args, **kwargs)
+
+    # Automatically create emergency alert for high-risk pregnancy
+    if self.pregnancy_risk_level == "High":
+        EmergencyAlert.objects.create(
+            patient=self,
+            alert_type="High Risk Pregnancy",
+            description="Patient automatically flagged as high risk."
+        )
 
 class Emergency(models.Model):
     SEVERITY_CHOICES = (
@@ -136,3 +197,15 @@ class Referral(models.Model):
     def patient(self):
         # Allows templates to do referral.patient.name
         return self.emergency.patient
+
+class EmergencyAlert(models.Model):
+    patient = models.ForeignKey(
+        'Patient', on_delete=models.CASCADE, related_name='emergency_alerts'
+    )
+    alert_type = models.CharField(max_length=50, blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    resolved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Alert for {self.patient} at {self.created_at}"

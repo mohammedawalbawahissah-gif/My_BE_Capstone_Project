@@ -20,8 +20,12 @@
                 ← Back to List
             </a>
 
-            <a href="{% url 'patient_edit' patient.id %}" class="btn btn-success">
-                ✏ Edit Patient
+            <a href="{% url 'patient_edit' patient.id %}" class="btn btn-sm btn-warning">
+                Edit
+            </a>
+
+            <a href="{% url 'patient_delete' patient.id %}" class="btn btn-sm btn-danger">
+                Delete
             </a>
         </div>
 
